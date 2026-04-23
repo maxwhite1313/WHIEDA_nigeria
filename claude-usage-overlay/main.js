@@ -64,8 +64,13 @@ function calcCost(u) {
   );
 }
 
+function getClaudeDir() {
+  // Claude Code stores sessions in ~/.claude/projects on all platforms
+  return path.join(os.homedir(), '.claude', 'projects');
+}
+
 function readAllUsage() {
-  const claudeDir = path.join(os.homedir(), '.claude', 'projects');
+  const claudeDir = getClaudeDir();
   const totals = { input: 0, output: 0, cacheCreate: 0, cacheRead: 0 };
   const todayTotals = { input: 0, output: 0, cacheCreate: 0, cacheRead: 0 };
   const sessions = [];
@@ -106,6 +111,7 @@ function readAllUsage() {
   return {
     today: { ...todayTotals, cost: calcCost(todayTotals) },
     allTime: { ...totals, cost: calcCost(totals) },
+    claudeDir,
     sessions,
     updatedAt: new Date().toISOString(),
   };
@@ -116,7 +122,7 @@ function createWindow() {
 
   win = new BrowserWindow({
     width: 340,
-    height: 260,
+    height: 340,
     x: width - 360,
     y: 20,
     frame: false,
@@ -153,7 +159,7 @@ ipcMain.on('close-window', () => app.quit());
 ipcMain.on('minimize-window', () => {
   if (!win) return;
   if (isMinimized) {
-    win.setSize(340, 260);
+    win.setSize(340, 340);
     isMinimized = false;
   } else {
     win.setSize(340, 48);

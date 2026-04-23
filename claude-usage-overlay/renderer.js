@@ -75,6 +75,13 @@ function render(data) {
   const dailyLimit  = parseInt(localStorage.getItem('dailyLimit') || '0', 10);
   const outputLimit = parseInt(localStorage.getItem('outputLimit') || '0', 10);
 
+  const noData = todayTotal === 0 && allTotal === 0;
+  const pathHint = noData
+    ? `<div style="font-size:9px;color:#E06060;margin-top:6px;word-break:break-all">
+        No data found.<br>Path: <span style="color:#8888A8">${data.claudeDir || '?'}</span>
+       </div>`
+    : '';
+
   el('body-content').innerHTML = `
     <div class="section-label">Today</div>
     <div class="stats-row">
@@ -87,11 +94,12 @@ function render(data) {
 
     <div class="divider"></div>
 
-    <div class="section-label">All-Time Session</div>
+    <div class="section-label">All-Time Sessions</div>
     <div class="stats-row">
       ${statBox('Total Tokens', fmtTokens(allTotal), 'all sessions', '')}
       ${statBox('Est. Cost', fmtCost(allTime.cost), 'USD', 'green')}
     </div>
+    ${pathHint}
   `;
 
   el('header-sub').innerHTML = 'Claude Code Monitor';
