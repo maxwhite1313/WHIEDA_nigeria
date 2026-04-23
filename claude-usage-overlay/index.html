@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Usage</title>
+  <style>
+    :root {
+      --bg:        #1A1A2A;
+      --surface:   #22223A;
+      --border:    #35355A;
+      --accent:    #D4866A;
+      --accent-2:  #E8A882;
+      --text:      #E8E8F0;
+      --muted:     #8888A8;
+      --green:     #5CB88A;
+      --red:       #E06060;
+      --radius:    14px;
+      --font:      -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background: transparent;
+      color: var(--text);
+      -webkit-app-region: no-drag;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 340px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      cursor: move;
+      -webkit-app-region: drag;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo {
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+      flex-shrink: 0;
+    }
+
+    .title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.2px;
+    }
+
+    .subtitle {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 6px;
+      -webkit-app-region: no-drag;
+    }
+
+    .btn-ctrl {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      transition: opacity 0.15s;
+    }
+    .btn-ctrl:hover { opacity: 0.8; }
+    .btn-min { background: #F0C040; color: #6B5000; }
+    .btn-close { background: #E06060; color: #6B0000; }
+
+    /* ── Body ── */
+    .body {
+      padding: 12px 14px;
+    }
+
+    .section-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-bottom: 10px;
+    }
+
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 8px 10px;
+    }
+
+    .stat-label {
+      font-size: 9px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 3px;
+    }
+
+    .stat-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-value.accent { color: var(--accent-2); }
+    .stat-value.green  { color: var(--green); }
+
+    .stat-sub {
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── Token bar ── */
+    .bar-section {
+      margin-bottom: 10px;
+    }
+
+    .bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    .bar-label { font-size: 10px; color: var(--muted); }
+    .bar-value { font-size: 10px; color: var(--text); font-weight: 600; }
+
+    .bar-track {
+      height: 5px;
+      background: var(--surface);
+      border-radius: 3px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+      transition: width 0.4s ease;
+    }
+
+    .bar-fill.green { background: linear-gradient(90deg, #3D9970 0%, var(--green) 100%); }
+    .bar-fill.red   { background: linear-gradient(90deg, #C04040 0%, var(--red) 100%); }
+
+    /* ── Footer ── */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .footer-updated {
+      font-size: 9px;
+      color: var(--muted);
+    }
+
+    .btn-refresh {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 9px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: var(--font);
+    }
+    .btn-refresh:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    /* ── Minimized state ── */
+    body.minimized .body,
+    body.minimized .footer { display: none; }
+    body.minimized .header { border-bottom: none; }
+
+    /* ── Loading state ── */
+    .loading {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dot-anim::after {
+      content: '';
+      animation: dots 1.2s infinite;
+    }
+    @keyframes dots {
+      0%   { content: ''; }
+      33%  { content: '.'; }
+      66%  { content: '..'; }
+      100% { content: '...'; }
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header" id="drag-handle">
+      <div class="header-left">
+        <div class="logo">C</div>
+        <div>
+          <div class="title">Claude Usage</div>
+          <div class="subtitle" id="header-sub">Loading<span class="dot-anim"></span></div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn-ctrl btn-min" id="btn-min" title="Minimize">−</button>
+        <button class="btn-ctrl btn-close" id="btn-close" title="Close">✕</button>
+      </div>
+    </div>
+
+    <div class="body" id="body-content">
+      <div class="loading">Loading<span class="dot-anim"></span></div>
+    </div>
+
+    <div class="footer" id="footer-bar">
+      <span class="footer-updated" id="last-updated">—</span>
+      <button class="btn-refresh" id="btn-refresh">↻ Refresh</button>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
